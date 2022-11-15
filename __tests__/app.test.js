@@ -68,3 +68,41 @@ describe("/api/reviews", () => {
             });
     });
 });
+
+describe("/api/reviews/:review_id", () => {
+    test("GET - 200: Responds with review object", () => {
+        return request(app)
+            .get("/api/reviews/1")
+            .expect(200)
+            .then((res) => {
+                const review = res.body.review;
+                expect(review).toMatchObject({
+                    review_id: 1,
+                    title: expect.any(String),
+                    category: expect.any(String),
+                    designer: expect.any(String),
+                    owner: expect.any(String),
+                    review_img_url: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    review_body: expect.any(String),
+                });
+            });
+    });
+    test("GET - 404: Responds with error if valid but non-existant review ID requested", () => {
+        return request(app)
+            .get("/api/reviews/100")
+            .expect(404)
+            .then((res) => {
+                expect(res.body.msg).toBe("Review ID : 100 does not exist");
+            });
+    });
+    test("GET - 400: Responds with error if invalid review ID requested", () => {
+        return request(app)
+            .get("/api/reviews/not-a-valid-id")
+            .expect(400)
+            .then((res) => {
+                expect(res.body.msg).toBe("Bad Request");
+            });
+    });
+});
