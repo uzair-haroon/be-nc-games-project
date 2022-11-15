@@ -44,7 +44,6 @@ exports.getCommentsByReviewId = (req, res, next) => {
 
 exports.postComment = (req, res, next) => {
     const { review_id } = req.params;
-    const { username, body } = req.body;
 
     if (
         !(
@@ -54,9 +53,7 @@ exports.postComment = (req, res, next) => {
         )
     ) {
         next({ status: 400, msg: "Bad Request" });
-    }
-
-    if (
+    } else if (
         !(
             typeof req.body.username === "string" &&
             typeof req.body.body === "string"
@@ -66,11 +63,13 @@ exports.postComment = (req, res, next) => {
             status: 422,
             msg: "Unprocessable Entity: Request body contains invalid types",
         });
-    }
+    } else {
+        const { username, body } = req.body;
 
-    insertComment(username, body, review_id)
-        .then((comment) => {
-            res.status(201).send({ comment: comment });
-        })
-        .catch(next);
+        insertComment(username, body, review_id)
+            .then((comment) => {
+                res.status(201).send({ comment: comment });
+            })
+            .catch(next);
+    }
 };
