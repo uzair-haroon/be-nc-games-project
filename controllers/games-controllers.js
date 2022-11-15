@@ -3,6 +3,7 @@ const {
     selectReviews,
     selectReviewById,
     selectCommentsByReviewId,
+    insertComment,
 } = require("../models/games-model");
 
 exports.getCategories = (req, res, next) => {
@@ -39,4 +40,37 @@ exports.getCommentsByReviewId = (req, res, next) => {
         .catch((error) => {
             next(error);
         });
+};
+
+exports.postComment = (req, res, next) => {
+    const { review_id } = req.params;
+    const { username, body } = req.body;
+
+    if (
+        !(
+            Object.keys(req.body).length === 2 &&
+            Object.keys(req.body).includes("body") &&
+            Object.keys(req.body).includes("username")
+        )
+    ) {
+        next({ status: 400, msg: "Bad Request" });
+    }
+
+    if (
+        !(
+            typeof req.body.username === "string" &&
+            typeof req.body.body === "string"
+        )
+    ) {
+        next({
+            status: 422,
+            msg: "Unprocessable Entity: Request body contains invalid types",
+        });
+    }
+
+    insertComment(username, body, review_id)
+        .then((comment) => {
+            res.status(201).send({ comment: comment });
+        })
+        .catch(next);
 };

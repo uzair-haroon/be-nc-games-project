@@ -155,4 +155,82 @@ describe("/api/reviews/:review_id/comments", () => {
                 expect(res.body.msg).toBe("Bad Request");
             });
     });
+    test("POST - 201: Responds with the newly posted comment", () => {
+        const newComment = {
+            username: "bainesface",
+            body: "My dog loved this game too!",
+        };
+        return request(app)
+            .post("/api/reviews/1/comments")
+            .send(newComment)
+            .expect(201)
+            .then((res) => {
+                const comment = res.body.comment;
+                expect(comment).toMatchObject({
+                    comment_id: expect.any(Number),
+                    votes: 0, // Default to 0?
+                    created_at: expect.any(String),
+                    author: expect.any(String), // username
+                    body: expect.any(String), // req.body.body
+                    review_id: expect.any(Number), // in URL params
+                });
+            });
+    });
+    test("POST - 404: Responds with error if valid but non-existant review ID requested", () => {
+        const newComment = {
+            username: "bainesface",
+            body: "My dog loved this game too!",
+        };
+        return request(app)
+            .post("/api/reviews/100/comments")
+            .send(newComment)
+            .expect(404)
+            .then((res) => {
+                expect(res.body.msg).toBe("Review ID : 100 does not exist");
+            });
+    });
+    test("POST - 404: Responds with error if non-existant username requested", () => {
+        const newComment = {
+            username: "some-non-existant-username",
+            body: "My dog loved this game too!",
+        };
+        return request(app)
+            .post("/api/reviews/1/comments")
+            .send(newComment)
+            .expect(404)
+            .then((res) => {
+                expect(res.body.msg).toBe(
+                    "Username : 'some-non-existant-username' does not exist"
+                );
+            });
+    });
+    test("POST - 400: Responds with error if anything other than 'username' and 'body' are included in the request body", () => {
+        const newComment = {
+            username: "bainesface",
+            body: "My dog loved this game too!",
+            votes: 52,
+        };
+        return request(app)
+            .post("/api/reviews/1/comments")
+            .send(newComment)
+            .expect(400)
+            .then((res) => {
+                expect(res.body.msg).toBe("Bad Request");
+            });
+    });
+    test("POST - 422: Responds with error if invalid types for 'username' and 'body' are included in the request body", () => {
+        const newComment = {
+            username: "bainesface",
+            body: 26.23,
+        };
+        return request(app)
+            .post("/api/reviews/1/comments")
+            .send(newComment)
+            .expect(422)
+            .then((res) => {
+                expect(res.body.msg).toBe(
+                    "Unprocessable Entity: Request body contains invalid types"
+                );
+            });
+    });
 });
