@@ -106,3 +106,53 @@ describe("/api/reviews/:review_id", () => {
             });
     });
 });
+
+describe("/api/reviews/:review_id/comments", () => {
+    test("GET - 200: Responds with array of comment objects for requested review", () => {
+        return request(app)
+            .get("/api/reviews/2/comments")
+            .expect(200)
+            .then((res) => {
+                const comments = res.body.comments;
+                expect(comments.length).toBeGreaterThan(0);
+                comments.forEach((comment) => {
+                    expect(comment).toMatchObject({
+                        comment_id: expect.any(Number),
+                        votes: expect.any(Number),
+                        created_at: expect.any(String),
+                        author: expect.any(String),
+                        body: expect.any(String),
+                        review_id: expect.any(Number),
+                    });
+                });
+                expect(comments).toBeSortedBy("created_at", {
+                    descending: true,
+                });
+            });
+    });
+    test("GET - 200: Responds with empty array of comment objects for requested review with no comments", () => {
+        return request(app)
+            .get("/api/reviews/1/comments")
+            .expect(200)
+            .then((res) => {
+                const comments = res.body.comments;
+                expect(comments.length).toBe(0);
+            });
+    });
+    test("GET - 404: Responds with error if valid but non-existant review ID requested", () => {
+        return request(app)
+            .get("/api/reviews/100/comments")
+            .expect(404)
+            .then((res) => {
+                expect(res.body.msg).toBe("Review ID : 100 does not exist");
+            });
+    });
+    test("GET - 400: Responds with error if invalid review ID is requested", () => {
+        return request(app)
+            .get("/api/reviews/not-a-valid-id/comments")
+            .expect(400)
+            .then((res) => {
+                expect(res.body.msg).toBe("Bad Request");
+            });
+    });
+});
