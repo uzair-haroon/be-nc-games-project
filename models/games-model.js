@@ -1,5 +1,6 @@
 const { query } = require("../db/connection");
 const db = require("../db/connection");
+const { checkReviewExists } = require("./utils");
 
 exports.selectCategories = () => {
     return db
@@ -49,5 +50,23 @@ exports.selectReviewById = (review_id) => {
                 });
             }
             return result.rows[0];
+        });
+};
+
+exports.selectCommentsByReviewId = (review_id) => {
+    return checkReviewExists(review_id)
+        .then(() => {
+            return db.query(
+                `
+                    SELECT *
+                    FROM comments
+                    WHERE review_id = $1
+                    ORDER BY created_at DESC;
+                `,
+                [review_id]
+            );
+        })
+        .then((result) => {
+            return result.rows;
         });
 };
