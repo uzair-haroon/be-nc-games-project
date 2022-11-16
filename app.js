@@ -7,6 +7,7 @@ const {
     getCommentsByReviewId,
     postComment,
     patchReview,
+    getUsers,
 } = require("./controllers/games-controllers");
 
 const app = express();
@@ -19,6 +20,7 @@ app.get("/api/reviews/:review_id", getReviewById);
 app.patch("/api/reviews/:review_id", patchReview);
 app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
 app.post("/api/reviews/:review_id/comments", postComment);
+app.get("/api/users", getUsers);
 
 app.all("/*", (req, res) => {
     res.status(404).send({ msg: "Route not found" });
