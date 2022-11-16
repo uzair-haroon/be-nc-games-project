@@ -72,22 +72,17 @@ exports.selectCommentsByReviewId = (review_id) => {
 };
 
 exports.insertComment = (username, body, review_id) => {
-    return Promise.all([
-        checkReviewExists(review_id),
-        checkUserExists(username),
-    ])
-        .then(() => {
-            return db.query(
-                `
-                    INSERT INTO comments
-                        (body, author, review_id)
-                    VALUES 
-                        ($1, $2, $3)
-                    RETURNING *;
-                `,
-                [body, username, review_id]
-            );
-        })
+    return db
+        .query(
+            `
+                INSERT INTO comments
+                    (body, author, review_id)
+                VALUES 
+                    ($1, $2, $3)
+                RETURNING *;
+             `,
+            [body, username, review_id]
+        )
         .then((result) => {
             return result.rows[0];
         });

@@ -170,9 +170,9 @@ describe("/api/reviews/:review_id/comments", () => {
                     comment_id: expect.any(Number),
                     votes: 0, // Default to 0?
                     created_at: expect.any(String),
-                    author: expect.any(String), // username
-                    body: expect.any(String), // req.body.body
-                    review_id: expect.any(Number), // in URL params
+                    author: "bainesface", // username
+                    body: "My dog loved this game too!", // req.body.body
+                    review_id: 1, // in URL params
                 });
             });
     });
@@ -186,7 +186,7 @@ describe("/api/reviews/:review_id/comments", () => {
             .send(newComment)
             .expect(404)
             .then((res) => {
-                expect(res.body.msg).toBe("Review ID : 100 does not exist");
+                expect(res.body.msg).toBe("Field does not exist");
             });
     });
     test("POST - 404: Responds with error if non-existant username requested", () => {
@@ -199,9 +199,7 @@ describe("/api/reviews/:review_id/comments", () => {
             .send(newComment)
             .expect(404)
             .then((res) => {
-                expect(res.body.msg).toBe(
-                    "Username : 'some-non-existant-username' does not exist"
-                );
+                expect(res.body.msg).toBe("Field does not exist");
             });
     });
     test("POST - 400: Responds with error if anything other than 'username' and 'body' are included in the request body", () => {
