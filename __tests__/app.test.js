@@ -152,14 +152,14 @@ describe("/api/reviews/:review_id", () => {
                 expect(res.body.msg).toBe("Bad Request");
             });
     });
-    test("PATCH - 422: Responds with error if invalid type for inc_votes is inluded in request body", () => {
+    test("PATCH - 400: Responds with error if invalid type for inc_votes is inluded in request body", () => {
         const newReviewData = {
-            inc_votes: "5",
+            inc_votes: "five",
         };
         return request(app)
             .patch("/api/reviews/1")
             .send(newReviewData)
-            .expect(422)
+            .expect(400)
             .then((res) => {
                 expect(res.body.msg).toBe(
                     "Unprocessable Entity: Request body contains invalid types"
@@ -277,7 +277,7 @@ describe("/api/reviews/:review_id/comments", () => {
                 expect(res.body.msg).toBe("Bad Request");
             });
     });
-    test("POST - 422: Responds with error if invalid types for 'username' and 'body' are included in the request body", () => {
+    test("POST - 400: Responds with error if invalid types for 'username' and 'body' are included in the request body", () => {
         const newComment = {
             username: "bainesface",
             body: 26.23,
@@ -285,7 +285,7 @@ describe("/api/reviews/:review_id/comments", () => {
         return request(app)
             .post("/api/reviews/1/comments")
             .send(newComment)
-            .expect(422)
+            .expect(400)
             .then((res) => {
                 expect(res.body.msg).toBe(
                     "Unprocessable Entity: Request body contains invalid types"

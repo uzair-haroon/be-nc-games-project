@@ -43,7 +43,7 @@ exports.patchReview = (req, res, next) => {
         next({ status: 400, msg: "Bad Request" });
     } else if (!(typeof req.body.inc_votes === "number")) {
         next({
-            status: 422,
+            status: 400,
             msg: "Unprocessable Entity: Request body contains invalid types",
         });
     } else {
@@ -87,7 +87,7 @@ exports.postComment = (req, res, next) => {
         )
     ) {
         next({
-            status: 422,
+            status: 400,
             msg: "Unprocessable Entity: Request body contains invalid types",
         });
     } else {
