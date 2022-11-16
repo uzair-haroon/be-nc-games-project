@@ -87,3 +87,21 @@ exports.insertComment = (username, body, review_id) => {
             return result.rows[0];
         });
 };
+
+exports.updateReview = (inc_votes, review_id) => {
+    return checkReviewExists(review_id)
+        .then(() => {
+            return db.query(
+                `
+                    UPDATE reviews
+                    SET votes = votes + $1
+                    WHERE review_id = $2
+                    RETURNING *;
+                `,
+                [inc_votes, review_id]
+            );
+        })
+        .then((result) => {
+            return result.rows[0];
+        });
+};

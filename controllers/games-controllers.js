@@ -4,6 +4,7 @@ const {
     selectReviewById,
     selectCommentsByReviewId,
     insertComment,
+    updateReview,
 } = require("../models/games-model");
 
 exports.getCategories = (req, res, next) => {
@@ -28,6 +29,32 @@ exports.getReviewById = (req, res, next) => {
         .catch((error) => {
             next(error);
         });
+};
+
+exports.patchReview = (req, res, next) => {
+    const { review_id } = req.params;
+
+    if (
+        !(
+            Object.keys(req.body).length === 1 &&
+            Object.keys(req.body).includes("inc_votes")
+        )
+    ) {
+        next({ status: 400, msg: "Bad Request" });
+    } else if (!(typeof req.body.inc_votes === "number")) {
+        next({
+            status: 422,
+            msg: "Unprocessable Entity: Request body contains invalid types",
+        });
+    } else {
+        const { inc_votes } = req.body;
+
+        updateReview(inc_votes, review_id)
+            .then((review) => {
+                res.status(200).send({ review: review });
+            })
+            .catch(next);
+    }
 };
 
 exports.getCommentsByReviewId = (req, res, next) => {

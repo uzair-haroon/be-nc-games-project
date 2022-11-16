@@ -105,6 +105,67 @@ describe("/api/reviews/:review_id", () => {
                 expect(res.body.msg).toBe("Bad Request");
             });
     });
+    test("PATCH - 200: Responds with the updated review", () => {
+        const newReviewData = {
+            inc_votes: 5,
+        };
+        return request(app)
+            .patch("/api/reviews/1")
+            .send(newReviewData)
+            .expect(200)
+            .then((res) => {
+                const review = res.body.review;
+                expect(review).toMatchObject({
+                    review_id: 1,
+                    title: expect.any(String),
+                    category: expect.any(String),
+                    designer: expect.any(String),
+                    owner: expect.any(String),
+                    review_img_url: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: 6,
+                    review_body: expect.any(String),
+                });
+            });
+    });
+    test("PATCH - 404: Responds with error if valid but non-existant review ID requested", () => {
+        const newReviewData = {
+            inc_votes: 5,
+        };
+        return request(app)
+            .patch("/api/reviews/100")
+            .send(newReviewData)
+            .expect(404)
+            .then((res) => {
+                expect(res.body.msg).toBe("Review ID : 100 does not exist");
+            });
+    });
+    test("PATCH - 400: Responds with error if invalid review ID requested", () => {
+        const newReviewData = {
+            inc_votes: 5,
+        };
+        return request(app)
+            .patch("/api/reviews/not-a-valid-id")
+            .send(newReviewData)
+            .expect(400)
+            .then((res) => {
+                expect(res.body.msg).toBe("Bad Request");
+            });
+    });
+    test("PATCH - 422: Responds with error if invalid type for inc_votes is inluded in request body", () => {
+        const newReviewData = {
+            inc_votes: "5",
+        };
+        return request(app)
+            .patch("/api/reviews/1")
+            .send(newReviewData)
+            .expect(422)
+            .then((res) => {
+                expect(res.body.msg).toBe(
+                    "Unprocessable Entity: Request body contains invalid types"
+                );
+            });
+    });
 });
 
 describe("/api/reviews/:review_id/comments", () => {
