@@ -39,3 +39,26 @@ exports.checkUserExists = (username) => {
             }
         });
 };
+
+exports.checkCategoryExists = (category) => {
+    if (!category) {
+        return Promise.resolve();
+    }
+    return db
+        .query(
+            `
+                SELECT * 
+                FROM categories 
+                WHERE slug = $1;
+            `,
+            [category.split(" ").join("-")]
+        )
+        .then((res) => {
+            if (res.rows.length === 0) {
+                return Promise.reject({
+                    status: 404,
+                    msg: `Category : ${category} does not exist`,
+                });
+            }
+        });
+};

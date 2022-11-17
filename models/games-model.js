@@ -1,6 +1,10 @@
 const { query } = require("../db/connection");
 const db = require("../db/connection");
-const { checkReviewExists, checkUserExists } = require("./utils");
+const {
+    checkReviewExists,
+    checkUserExists,
+    checkCategoryExists,
+} = require("./utils");
 
 exports.selectCategories = () => {
     return db
@@ -15,18 +19,53 @@ exports.selectCategories = () => {
         });
 };
 
-exports.selectReviews = () => {
-    return db
-        .query(
-            `
-                SELECT reviews.review_id, reviews.title, reviews.category, reviews.designer, reviews.owner, reviews.review_img_url, reviews.created_at, reviews.votes, CAST(COUNT( comments.comment_id ) AS int) AS comment_count
-                FROM reviews
-                LEFT JOIN comments
-                ON reviews.review_id = comments.review_id
-                GROUP BY reviews.review_id
-                ORDER BY reviews.created_at DESC;
-            `
-        )
+exports.selectReviews = (
+    category = null,
+    sort_by = "created_at",
+    order = "desc"
+) => {
+    const validQueryParams = [
+        "title",
+        "category",
+        "designer",
+        "owner",
+        "created_at",
+        "votes",
+        "comment_count",
+    ];
+    if (
+        !validQueryParams.includes(sort_by) ||
+        !["asc", "desc"].includes(order)
+    ) {
+        return Promise.reject({
+            status: 400,
+            msg: "Bad Request: Invalid query parameter(s)",
+        });
+    }
+
+    let queryString = `
+        SELECT reviews.review_id, reviews.title, reviews.category, reviews.designer, reviews.owner, reviews.review_img_url, reviews.created_at, reviews.votes, CAST(COUNT( comments.comment_id ) AS int) AS comment_count
+        FROM reviews
+        LEFT JOIN comments
+        ON reviews.review_id = comments.review_id 
+    `;
+
+    let queryValues = [];
+
+    if (category) {
+        queryString += `WHERE reviews.category = $1 `;
+        queryValues.push(category.split(" ").join("-"));
+    }
+
+    queryString += `
+        GROUP BY reviews.review_id
+        ORDER BY reviews.${sort_by} ${order};
+    `;
+
+    return checkCategoryExists(category)
+        .then(() => {
+            return db.query(queryString, queryValues);
+        })
         .then((result) => {
             return result.rows;
         });
