@@ -293,3 +293,22 @@ describe("/api/reviews/:review_id/comments", () => {
             });
     });
 });
+
+describe.only("/api/users", () => {
+    test("GET - 200: Responds with an array of user objects", () => {
+        return request(app)
+            .get("/api/users")
+            .expect(200)
+            .then((res) => {
+                const users = res.body.users;
+                expect(users.length).toBeGreaterThan(0);
+                users.forEach((user) => {
+                    expect(user).toMatchObject({
+                        username: expect.any(String),
+                        name: expect.any(String),
+                        avatar_url: expect.any(String),
+                    });
+                });
+            });
+    });
+});

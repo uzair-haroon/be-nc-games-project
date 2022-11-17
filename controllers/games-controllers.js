@@ -5,6 +5,7 @@ const {
     selectCommentsByReviewId,
     insertComment,
     updateReview,
+    selectUsers,
 } = require("../models/games-model");
 
 exports.getCategories = (req, res, next) => {
@@ -99,4 +100,10 @@ exports.postComment = (req, res, next) => {
             })
             .catch(next);
     }
+};
+
+exports.getUsers = (req, res, next) => {
+    selectUsers().then((users) => {
+        res.status(200).send({ users: users });
+    });
 };
