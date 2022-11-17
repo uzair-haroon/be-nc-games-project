@@ -89,7 +89,7 @@ describe("/api/reviews/:review_id", () => {
                 });
             });
     });
-    test("GET - 200: Responds with review object containing comment_count", () => {
+    test("GET - 200: Responds with review object containing 0 for comment_count", () => {
         return request(app)
             .get("/api/reviews/1")
             .expect(200)
@@ -105,7 +105,7 @@ describe("/api/reviews/:review_id", () => {
                     created_at: expect.any(String),
                     votes: expect.any(Number),
                     review_body: expect.any(String),
-                    comment_count: expect.any(Number),
+                    comment_count: 0,
                 });
             });
     });
