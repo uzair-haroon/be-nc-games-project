@@ -89,6 +89,26 @@ describe("/api/reviews/:review_id", () => {
                 });
             });
     });
+    test("GET - 200: Responds with review object containing 0 for comment_count", () => {
+        return request(app)
+            .get("/api/reviews/1")
+            .expect(200)
+            .then((res) => {
+                const review = res.body.review;
+                expect(review).toMatchObject({
+                    review_id: 1,
+                    title: expect.any(String),
+                    category: expect.any(String),
+                    designer: expect.any(String),
+                    owner: expect.any(String),
+                    review_img_url: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    review_body: expect.any(String),
+                    comment_count: 0,
+                });
+            });
+    });
     test("GET - 404: Responds with error if valid but non-existant review ID requested", () => {
         return request(app)
             .get("/api/reviews/100")
@@ -294,7 +314,7 @@ describe("/api/reviews/:review_id/comments", () => {
     });
 });
 
-describe.only("/api/users", () => {
+describe("/api/users", () => {
     test("GET - 200: Responds with an array of user objects", () => {
         return request(app)
             .get("/api/users")
