@@ -67,6 +67,130 @@ describe("/api/reviews", () => {
                 });
             });
     });
+    test("GET - 200: Responds with an array of review objects sorted by date in descending order if no query params are added", () => {
+        return request(app)
+            .get("/api/reviews")
+            .expect(200)
+            .then((res) => {
+                const reviews = res.body.reviews;
+                expect(reviews.length).toBeGreaterThan(0);
+                reviews.forEach((review) => {
+                    expect(review).toMatchObject({
+                        review_id: expect.any(Number),
+                        title: expect.any(String),
+                        category: expect.any(String),
+                        designer: expect.any(String),
+                        owner: expect.any(String),
+                        review_img_url: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        comment_count: expect.any(Number),
+                    });
+                });
+                expect(reviews).toBeSortedBy("created_at", {
+                    descending: true,
+                });
+            });
+    });
+    test("GET - 200: Responds with an array of review objects containing only the 'social deduction' category sorted by date in descending order if the category query param was requested", () => {
+        return request(app)
+            .get("/api/reviews?category=social+deduction")
+            .expect(200)
+            .then((res) => {
+                const reviews = res.body.reviews;
+                expect(reviews.length).toBeGreaterThan(0);
+                reviews.forEach((review) => {
+                    expect(review).toMatchObject({
+                        review_id: expect.any(Number),
+                        title: expect.any(String),
+                        category: "social deduction",
+                        designer: expect.any(String),
+                        owner: expect.any(String),
+                        review_img_url: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        comment_count: expect.any(Number),
+                    });
+                });
+                expect(reviews).toBeSortedBy("created_at", {
+                    descending: true,
+                });
+            });
+    });
+    test("GET - 200: Responds with an array of review objects containing only the 'social deduction' category sorted by 'votes' in descending order if the category and sort_by query param was requested", () => {
+        return request(app)
+            .get("/api/reviews?category=social+deduction&sort_by=votes")
+            .expect(200)
+            .then((res) => {
+                const reviews = res.body.reviews;
+                expect(reviews.length).toBeGreaterThan(0);
+                reviews.forEach((review) => {
+                    expect(review).toMatchObject({
+                        review_id: expect.any(Number),
+                        title: expect.any(String),
+                        category: "social deduction",
+                        designer: expect.any(String),
+                        owner: expect.any(String),
+                        review_img_url: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        comment_count: expect.any(Number),
+                    });
+                });
+                expect(reviews).toBeSortedBy("votes", {
+                    descending: true,
+                });
+            });
+    });
+    test("GET - 200: Responds with an array of review objects containing only the 'social deduction' category sorted by 'votes' in ascending order if the category, sort_by and order query param was requested", () => {
+        return request(app)
+            .get(
+                "/api/reviews?category=social+deduction&sort_by=votes&order=asc"
+            )
+            .expect(200)
+            .then((res) => {
+                const reviews = res.body.reviews;
+                expect(reviews.length).toBeGreaterThan(0);
+                reviews.forEach((review) => {
+                    expect(review).toMatchObject({
+                        review_id: expect.any(Number),
+                        title: expect.any(String),
+                        category: "social deduction",
+                        designer: expect.any(String),
+                        owner: expect.any(String),
+                        review_img_url: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        comment_count: expect.any(Number),
+                    });
+                });
+                expect(reviews).toBeSortedBy("votes", {
+                    descending: false,
+                });
+            });
+    });
+    test("GET - 400: Responds with error if invalid sort_by is inputted", () => {
+        return request(app)
+            .get("/api/reviews?category=social+deduction&sort_by=age&order=asc")
+            .expect(400)
+            .then((res) => {
+                expect(res.body.msg).toBe(
+                    "Bad Request: Invalid query parameter(s)"
+                );
+            });
+    });
+    test("GET - 400: Responds with error if invalid order is inputted", () => {
+        return request(app)
+            .get(
+                "/api/reviews?category=social+deduction&sort_by=votes&order=upwards"
+            )
+            .expect(400)
+            .then((res) => {
+                expect(res.body.msg).toBe(
+                    "Bad Request: Invalid query parameter(s)"
+                );
+            });
+    });
 });
 
 describe("/api/reviews/:review_id", () => {
