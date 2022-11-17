@@ -1,6 +1,10 @@
 const { query } = require("../db/connection");
 const db = require("../db/connection");
-const { checkReviewExists, checkUserExists } = require("./utils");
+const {
+    checkReviewExists,
+    checkUserExists,
+    checkCategoryExists,
+} = require("./utils");
 
 exports.selectCategories = () => {
     return db
@@ -29,7 +33,6 @@ exports.selectReviews = (
         "votes",
         "comment_count",
     ];
-
     if (
         !validQueryParams.includes(sort_by) ||
         !["asc", "desc"].includes(order)
@@ -51,7 +54,7 @@ exports.selectReviews = (
 
     if (category) {
         queryString += `WHERE reviews.category = $1 `;
-        queryValues.push(category);
+        queryValues.push(category.split(" ").join("-"));
     }
 
     queryString += `
@@ -59,9 +62,13 @@ exports.selectReviews = (
         ORDER BY reviews.${sort_by} ${order};
     `;
 
-    return db.query(queryString, queryValues).then((result) => {
-        return result.rows;
-    });
+    return checkCategoryExists(category)
+        .then(() => {
+            return db.query(queryString, queryValues);
+        })
+        .then((result) => {
+            return result.rows;
+        });
 };
 
 exports.selectReviewById = (review_id) => {

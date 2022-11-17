@@ -73,20 +73,6 @@ describe("/api/reviews", () => {
             .expect(200)
             .then((res) => {
                 const reviews = res.body.reviews;
-                expect(reviews.length).toBeGreaterThan(0);
-                reviews.forEach((review) => {
-                    expect(review).toMatchObject({
-                        review_id: expect.any(Number),
-                        title: expect.any(String),
-                        category: expect.any(String),
-                        designer: expect.any(String),
-                        owner: expect.any(String),
-                        review_img_url: expect.any(String),
-                        created_at: expect.any(String),
-                        votes: expect.any(Number),
-                        comment_count: expect.any(Number),
-                    });
-                });
                 expect(reviews).toBeSortedBy("created_at", {
                     descending: true,
                 });
@@ -94,22 +80,14 @@ describe("/api/reviews", () => {
     });
     test("GET - 200: Responds with an array of review objects containing only the 'social deduction' category sorted by date in descending order if the category query param was requested", () => {
         return request(app)
-            .get("/api/reviews?category=social+deduction")
+            .get("/api/reviews?category=dexterity")
             .expect(200)
             .then((res) => {
                 const reviews = res.body.reviews;
                 expect(reviews.length).toBeGreaterThan(0);
                 reviews.forEach((review) => {
                     expect(review).toMatchObject({
-                        review_id: expect.any(Number),
-                        title: expect.any(String),
-                        category: "social deduction",
-                        designer: expect.any(String),
-                        owner: expect.any(String),
-                        review_img_url: expect.any(String),
-                        created_at: expect.any(String),
-                        votes: expect.any(Number),
-                        comment_count: expect.any(Number),
+                        category: "dexterity",
                     });
                 });
                 expect(reviews).toBeSortedBy("created_at", {
@@ -119,22 +97,14 @@ describe("/api/reviews", () => {
     });
     test("GET - 200: Responds with an array of review objects containing only the 'social deduction' category sorted by 'votes' in descending order if the category and sort_by query param was requested", () => {
         return request(app)
-            .get("/api/reviews?category=social+deduction&sort_by=votes")
+            .get("/api/reviews?category=dexterity&sort_by=votes")
             .expect(200)
             .then((res) => {
                 const reviews = res.body.reviews;
                 expect(reviews.length).toBeGreaterThan(0);
                 reviews.forEach((review) => {
                     expect(review).toMatchObject({
-                        review_id: expect.any(Number),
-                        title: expect.any(String),
-                        category: "social deduction",
-                        designer: expect.any(String),
-                        owner: expect.any(String),
-                        review_img_url: expect.any(String),
-                        created_at: expect.any(String),
-                        votes: expect.any(Number),
-                        comment_count: expect.any(Number),
+                        category: "dexterity",
                     });
                 });
                 expect(reviews).toBeSortedBy("votes", {
@@ -144,24 +114,14 @@ describe("/api/reviews", () => {
     });
     test("GET - 200: Responds with an array of review objects containing only the 'social deduction' category sorted by 'votes' in ascending order if the category, sort_by and order query param was requested", () => {
         return request(app)
-            .get(
-                "/api/reviews?category=social+deduction&sort_by=votes&order=asc"
-            )
+            .get("/api/reviews?category=dexterity&sort_by=votes&order=asc")
             .expect(200)
             .then((res) => {
                 const reviews = res.body.reviews;
                 expect(reviews.length).toBeGreaterThan(0);
                 reviews.forEach((review) => {
                     expect(review).toMatchObject({
-                        review_id: expect.any(Number),
-                        title: expect.any(String),
-                        category: "social deduction",
-                        designer: expect.any(String),
-                        owner: expect.any(String),
-                        review_img_url: expect.any(String),
-                        created_at: expect.any(String),
-                        votes: expect.any(Number),
-                        comment_count: expect.any(Number),
+                        category: "dexterity",
                     });
                 });
                 expect(reviews).toBeSortedBy("votes", {
@@ -169,9 +129,17 @@ describe("/api/reviews", () => {
                 });
             });
     });
+    test("GET - 404: Responds with error if non-existing category is inputted", () => {
+        return request(app)
+            .get("/api/reviews?category=annoying&sort_by=votes&order=asc")
+            .expect(404)
+            .then((res) => {
+                expect(res.body.msg).toBe("Category : annoying does not exist");
+            });
+    });
     test("GET - 400: Responds with error if invalid sort_by is inputted", () => {
         return request(app)
-            .get("/api/reviews?category=social+deduction&sort_by=age&order=asc")
+            .get("/api/reviews?category=dexterity&sort_by=age&order=asc")
             .expect(400)
             .then((res) => {
                 expect(res.body.msg).toBe(
@@ -182,7 +150,7 @@ describe("/api/reviews", () => {
     test("GET - 400: Responds with error if invalid order is inputted", () => {
         return request(app)
             .get(
-                "/api/reviews?category=social+deduction&sort_by=votes&order=upwards"
+                "/api/reviews?category=social deduction&sort_by=votes&order=upwards"
             )
             .expect(400)
             .then((res) => {
