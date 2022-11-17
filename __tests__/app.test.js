@@ -86,6 +86,7 @@ describe("/api/reviews/:review_id", () => {
                     created_at: expect.any(String),
                     votes: expect.any(Number),
                     review_body: expect.any(String),
+                    comment_count: expect.any(Number),
                 });
             });
     });
@@ -294,7 +295,7 @@ describe("/api/reviews/:review_id/comments", () => {
     });
 });
 
-describe.only("/api/users", () => {
+describe("/api/users", () => {
     test("GET - 200: Responds with an array of user objects", () => {
         return request(app)
             .get("/api/users")
