@@ -424,3 +424,22 @@ describe("/api/users", () => {
             });
     });
 });
+
+describe("/api/comments/:comment_id", () => {
+    test("DELETE - 204: Responds with an empty object", () => {
+        return request(app)
+            .delete("/api/comments/1")
+            .expect(204)
+            .then((res) => {
+                expect(res.body).toMatchObject({});
+            });
+    });
+    test("DELETE - 404: Responds with error for comment that does not exists", () => {
+        return request(app)
+            .delete("/api/comments/500")
+            .expect(404)
+            .then((res) => {
+                expect(res.body.msg).toBe("Comment ID : 500 does not exist");
+            });
+    });
+});
