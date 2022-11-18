@@ -6,6 +6,7 @@ const {
     insertComment,
     updateReview,
     selectUsers,
+    removeComment,
 } = require("../models/games-model");
 
 exports.getCategories = (req, res, next) => {
@@ -109,4 +110,14 @@ exports.getUsers = (req, res, next) => {
     selectUsers().then((users) => {
         res.status(200).send({ users: users });
     });
+};
+
+exports.deleteCommentsById = (req, res, next) => {
+    const { comment_id } = req.params;
+
+    removeComment(comment_id)
+        .then(() => {
+            res.status(204).send();
+        })
+        .catch(next);
 };

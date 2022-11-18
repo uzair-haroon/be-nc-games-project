@@ -51,7 +51,7 @@ exports.checkCategoryExists = (category) => {
                 FROM categories 
                 WHERE slug = $1;
             `,
-            [category.split(" ").join("-")]
+            [category]
         )
         .then((res) => {
             if (res.rows.length === 0) {
