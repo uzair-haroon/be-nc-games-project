@@ -3,6 +3,8 @@ const app = require("../app");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data");
+const { readFile } = require("fs/promises");
+const path = require("path");
 
 beforeEach(() => {
     return seed(data);
@@ -10,6 +12,21 @@ beforeEach(() => {
 
 afterAll(() => {
     return db.end();
+});
+
+describe("/api", () => {
+    test("GET - 200: Responds with an array of endpoint objects", () => {
+        return request(app)
+            .get("/api")
+            .expect(200)
+            .then((res) => {
+                const file = path.join(`${__dirname}/..`, "endpoints.json");
+                const endpointsBody = res.body.endpoints;
+                readFile(file, { encoding: "utf-8" }).then((endpointsFile) => {
+                    expect(endpointsBody).toEqual(JSON.parse(endpointsFile));
+                });
+            });
+    });
 });
 
 describe("/non-existing-route", () => {
