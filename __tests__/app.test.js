@@ -442,4 +442,12 @@ describe("/api/comments/:comment_id", () => {
                 expect(res.body.msg).toBe("Comment ID : 500 does not exist");
             });
     });
+    test("DELETE - 400: Responds with error for an invalid comment_id", () => {
+        return request(app)
+            .delete("/api/comments/not-a-valid-id")
+            .expect(400)
+            .then((res) => {
+                expect(res.body.msg).toBe("Bad Request");
+            });
+    });
 });
