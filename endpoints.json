@@ -16,7 +16,11 @@
   },
   "GET /api/reviews": {
     "description": "serves an array of all reviews",
-    "queries": ["category", "sort_by", "order"],
+    "queries": [
+      "category",
+      "sort_by",
+      "order"
+    ],
     "exampleResponse": {
       "reviews": [
         {
@@ -26,9 +30,139 @@
           "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
           "category": "hidden-roles",
           "created_at": 1610964101251,
-          "votes": 5
+          "votes": 5,
+          "comment_count": 32
         }
       ]
     }
+  },
+  "GET /api/reviews/:review_id": {
+    "description": "serves a review object with ID reivew_id",
+    "queries": [],
+    "exampleResponse": {
+      "review": {
+        "title": "One Night Ultimate Werewolf",
+        "designer": "Akihisa Okui",
+        "owner": "happyamy2016",
+        "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+        "category": "hidden-roles",
+        "created_at": 1610964101251,
+        "review_body": "It's good",
+        "votes": 5,
+        "comment_count": 32
+      }
+    }
+  },
+  "PATCH /api/reviews/:review_id": {
+    "description": "serves an updated review object with incremented votes with ID reivew_id",
+    "body": {
+      "inc_votes": "number of votes to increment the 'votes' count"
+    },
+    "queries": [],
+    "exampleResponse": {
+      "review": {
+        "title": "One Night Ultimate Werewolf",
+        "designer": "Akihisa Okui",
+        "owner": "happyamy2016",
+        "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+        "category": "hidden-roles",
+        "created_at": 1610964101251,
+        "review_body": "It's good",
+        "votes": 6
+      }
+    }
+  },
+  "GET /api/reviews/:review_id/comments": {
+    "description": "serves an array of all comments for a review with ID review_id",
+    "queries": [],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 10,
+          "body": "Ex id ipsum dolore non cillum anim sint duis nisi anim deserunt nisi minim.",
+          "review_id": 2,
+          "author": "grumpy19",
+          "votes": 9,
+          "created_at": "2021-03-27T14:15:31.110Z"
+        },
+        {
+          "comment_id": 1,
+          "body": "I loved this game too!",
+          "review_id": 2,
+          "author": "happyamy2016",
+          "votes": 16,
+          "created_at": "2017-11-22T12:36:03.389Z"
+        },
+        {
+          "comment_id": 4,
+          "body": "EPIC board game!",
+          "review_id": 2,
+          "author": "tickle122",
+          "votes": 16,
+          "created_at": "2017-11-22T12:36:03.389Z"
+        }
+      ]
+    }
+  },
+  "POST /api/reviews/:review_id/comments": {
+    "description": "serves an new comment object for the review with ID reivew_id",
+    "body": {
+      "username": "the username of the comment author",
+      "body": "the content of the comment"
+    },
+    "queries": [],
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 73,
+        "body": "Me too!",
+        "review_id": 1,
+        "author": "tickle122",
+        "votes": 0,
+        "created_at": "2022-11-18T10:35:57.214Z"
+      }
+    }
+  },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "tickle122",
+          "name": "Tom Tickle",
+          "avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953"
+        },
+        {
+          "username": "grumpy19",
+          "name": "Paul Grump",
+          "avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/7/78/Mr-Grumpy-3A.PNG/revision/latest?cb=20170707233013"
+        },
+        {
+          "username": "happyamy2016",
+          "name": "Amy Happy",
+          "avatar_url": "https://vignette1.wikia.nocookie.net/mrmen/images/7/7f/Mr_Happy.jpg/revision/latest?cb=20140102171729"
+        },
+        {
+          "username": "cooljmessy",
+          "name": "Peter Messy",
+          "avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/1/1a/MR_MESSY_4A.jpg/revision/latest/scale-to-width-down/250?cb=20170730171002"
+        },
+        {
+          "username": "weegembump",
+          "name": "Gemma Bump",
+          "avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/7/7e/MrMen-Bump.png/revision/latest?cb=20180123225553"
+        },
+        {
+          "username": "jessjelly",
+          "name": "Jess Jelly",
+          "avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/4/4f/MR_JELLY_4A.jpg/revision/latest?cb=20180104121141"
+        }
+      ]
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "removes a comment with ID comment_id",
+    "queries": [],
+    "exampleResponse": {}
   }
 }

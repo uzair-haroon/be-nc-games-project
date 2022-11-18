@@ -1,6 +1,7 @@
 const express = require("express");
 
 const {
+    getAPIEndpoints,
     getCategories,
     getReviews,
     getReviewById,
@@ -15,6 +16,7 @@ const app = express();
 
 app.use(express.json());
 
+app.get("/api", getAPIEndpoints);
 app.get("/api/categories", getCategories);
 app.get("/api/reviews", getReviews);
 app.get("/api/reviews/:review_id", getReviewById);

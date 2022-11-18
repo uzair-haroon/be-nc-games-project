@@ -8,6 +8,16 @@ const {
     selectUsers,
     removeComment,
 } = require("../models/games-model");
+const { readFile } = require("fs/promises");
+const path = require("path");
+
+exports.getAPIEndpoints = (req, res, next) => {
+    const file = path.join(`${__dirname}/..`, "endpoints.json");
+
+    readFile(file, { encoding: "utf-8" }).then((endpoints) => {
+        res.status(200).send({ endpoints: JSON.parse(endpoints) });
+    });
+};
 
 exports.getCategories = (req, res, next) => {
     selectCategories().then((categories) => {
